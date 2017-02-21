@@ -5,46 +5,46 @@ defmodule Harvest.API do
 
   alias Harvest.Model.Error
 
-  defp company, do: Application.get_env(:harvest, :company)
-  defp email, do: Application.get_env(:harvest, :email)
-  defp password, do: Application.get_env(:harvest, :password)
-  defp has_ssl, do: Application.get_env(:harvest, :has_ssl)
+  defp company(), do: Application.get_env(:harvest, :company)
+  defp email(), do: Application.get_env(:harvest, :email)
+  defp password(), do: Application.get_env(:harvest, :password)
+  defp has_ssl(), do: Application.get_env(:harvest, :has_ssl)
 
-  defp protocol do
-    if has_ssl, do: "https", else: "http"
+  defp protocol() do
+    if has_ssl(), do: "https", else: "http"
   end
 
   defp build_url([]) do
-    "#{protocol}://#{company}.harvestapp.com/daily"
+    "#{protocol()}://#{company()}.harvestapp.com/daily"
   end
 
   defp build_url([user: user]) do
-    "#{protocol}://#{company}.harvestapp.com/daily?of_user=#{user}"
+    "#{protocol()}://#{company()}.harvestapp.com/daily?of_user=#{user}"
   end
 
   defp build_url([year: year, day: day_of_the_year]) do
-    "#{protocol}://#{company}.harvestapp.com/daily/#{day_of_the_year}/#{year}"
+    "#{protocol()}://#{company()}.harvestapp.com/daily/#{day_of_the_year}/#{year}"
   end
 
   defp build_url([user: user, year: year, day: day_of_the_year]) do
-    "#{protocol}://#{company}.harvestapp.com/daily/#{day_of_the_year}/#{year}?of_user=#{user}"
+    "#{protocol()}://#{company()}.harvestapp.com/daily/#{day_of_the_year}/#{year}?of_user=#{user}"
   end
 
   defp build_url([day_entry_id: day_entry_id, action: action]) do
-    "#{protocol}://#{company}.harvestapp.com/daily/#{action}/#{day_entry_id}"
+    "#{protocol()}://#{company()}.harvestapp.com/daily/#{action}/#{day_entry_id}"
   end
 
   defp build_url([user: user, day_entry_id: day_entry_id, action: action]) do
-    "#{protocol}://#{company}.harvestapp.com/daily/#{action}/#{day_entry_id}?of_user=#{user}"
+    "#{protocol()}://#{company()}.harvestapp.com/daily/#{action}/#{day_entry_id}?of_user=#{user}"
   end
 
-  defp headers do
+  defp headers() do
     %{"Content-Type" => "application/json",
       "Accept" => "application/json"}
   end
 
-  defp basic_auth do
-    [hackney: [basic_auth: {email, password}]]
+  defp basic_auth() do
+    [hackney: [basic_auth: {email(), password()}]]
   end
 
   def get_entries do
@@ -74,7 +74,7 @@ defmodule Harvest.API do
 
   defp request(params) do
     build_url(params)
-    |> HTTPoison.get(headers, basic_auth)
+    |> HTTPoison.get(headers(), basic_auth())
   end
 
   defp process_response(response, action) do
